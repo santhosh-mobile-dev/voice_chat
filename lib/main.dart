@@ -4,4 +4,3 @@ import 'package:voice_chat/app.dart';
 void main() {
   runApp(App());
 }
-
