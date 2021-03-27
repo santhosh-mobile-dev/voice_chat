@@ -11,7 +11,7 @@ class _MessageBubbleState extends State<MessageBubble> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: allPadding12,
+      padding: allMargin8,
       child: Align(
         alignment: Alignment.topLeft,
         child: Container(
@@ -19,12 +19,13 @@ class _MessageBubbleState extends State<MessageBubble> {
             borderRadius: messageBubbleRadius,
             color: grey,
           ),
-          padding: allPadding16,
+          padding: allMargin8,
           child: Container(
             child: Row(
+              mainAxisSize: MainAxisSize.min,
               children: [
                 Icon(Icons.play_arrow),
-                Slider(value: 0.0, min: 0.0, max: 2.0, onChanged: (val) {})
+                Slider(value: 0.0, min: 0.0, max: 5.0, onChanged: (val) {})
               ],
             ),
           ),
