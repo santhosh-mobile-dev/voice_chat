@@ -616,7 +616,7 @@ class _BottomChatAreaState extends State<BottomChatArea>
               },
               child: Container(
                 child: Material(
-                  color: green_color,
+                  color: primaryColor,
                   borderRadius: BorderRadius.circular(100),
                   child: AnimatedSize(
                     curve: Curves.easeIn,
@@ -627,7 +627,7 @@ class _BottomChatAreaState extends State<BottomChatArea>
                         width: _size,
                         height: _size,
                         child: Icon(longRecording ? Icons.send : Icons.mic,
-                            color: yellow_color),
+                            color: white_color),
                       ),
                     ),
                   ),
