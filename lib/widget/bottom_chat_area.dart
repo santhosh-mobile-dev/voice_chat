@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -35,8 +36,10 @@ class BottomChatArea extends StatefulWidget {
 class _BottomChatAreaState extends State<BottomChatArea>
     with TickerProviderStateMixin {
   AnimationController _recordController;
+  AnimationController _animationController;
   Animation _animation;
   bool flag = true;
+  bool onPress = false;
   Stream<int> timerStream;
   StreamSubscription<int> timerSubscription;
   String minutesStr = '00';
@@ -60,6 +63,21 @@ class _BottomChatAreaState extends State<BottomChatArea>
   bool showLockUi = false;
   bool shouldSend = true;
 
+  Animation<double> _micTranslateTop;
+  Animation<double> _micRotationFirst;
+  Animation<double> _micTranslateRight;
+  Animation<double> _micTranslateLeft;
+  Animation<double> _micRotationSecond;
+  Animation<double> _micTranslateDown;
+  Animation<double> _micInsideTrashTranslateDown;
+
+  Animation<double> _trashWithCoverTranslateTop;
+  Animation<double> _trashCoverRotationFirst;
+  Animation<double> _trashCoverTranslateLeft;
+  Animation<double> _trashCoverRotationSecond;
+  Animation<double> _trashCoverTranslateRight;
+  Animation<double> _trashWithCoverTranslateDown;
+
   // Audio
   FlutterSoundRecorder _myRecorder = FlutterSoundRecorder();
   bool _mRecorderIsInited = false;
@@ -72,7 +90,9 @@ class _BottomChatAreaState extends State<BottomChatArea>
     _recordController.repeat(reverse: true);
 
     _animation = Tween(begin: 1.0, end: 0.0).animate(_recordController)
-      ..addListener(anim);
+      ..addListener(() {
+        setState(() {});
+      });
 
     this.position = Offset(widget.width - 60, widget.height - 54);
     this.oldX = widget.width - 60;
@@ -85,16 +105,104 @@ class _BottomChatAreaState extends State<BottomChatArea>
       });
     });
 
+    _animationController = AnimationController(
+      vsync: this,
+      duration: Duration(milliseconds: 2500),
+    );
+
+    _micTranslateTop = Tween(begin: 0.0, end: -150.0).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: Interval(0.0, 0.45, curve: Curves.easeOut),
+      ),
+    );
+
+    _micRotationFirst = Tween(begin: 0.0, end: pi).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: Interval(0.0, 0.2),
+      ),
+    );
+
+    _micTranslateRight = Tween(begin: 0.0, end: 13.0).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: Interval(0.0, 0.1),
+      ),
+    );
+
+    _micTranslateLeft = Tween(begin: 0.0, end: -13.0).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: Interval(0.1, 0.2),
+      ),
+    );
+
+    _micRotationSecond = Tween(begin: 0.0, end: pi).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: Interval(0.2, 0.45),
+      ),
+    );
+
+    _micTranslateDown = Tween(begin: 0.0, end: 150.0).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: Interval(0.45, 0.79, curve: Curves.easeInOut),
+      ),
+    );
+
+    _micInsideTrashTranslateDown = Tween(begin: 0.0, end: 75.0).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: Interval(0.95, 1.0, curve: Curves.easeInOut),
+      ),
+    );
+
+    _trashWithCoverTranslateTop = Tween(begin: 50.0, end: -18.0).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: Interval(0.45, 0.6),
+      ),
+    );
+
+    _trashCoverRotationFirst = Tween(begin: 0.0, end: -pi / 3).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: Interval(0.6, 0.7),
+      ),
+    );
+
+    _trashCoverTranslateLeft = Tween(begin: 0.0, end: -18.0).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: Interval(0.6, 0.7),
+      ),
+    );
+
+    _trashCoverRotationSecond = Tween(begin: 0.0, end: pi / 3).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: Interval(0.8, 0.9),
+      ),
+    );
+
+    _trashCoverTranslateRight = Tween(begin: 0.0, end: 18.0).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: Interval(0.8, 0.9),
+      ),
+    );
+
+    _trashWithCoverTranslateDown = Tween(begin: 0.0, end: 75.0).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: Interval(0.95, 1.0, curve: Curves.easeInOut),
+      ),
+    );
+
     super.initState();
   }
-
-  void anim()
-  {
-    setState(() {
-
-    });
-  }
-
 
   Future<void> openTheRecorder() async {
     if (!kIsWeb) {
@@ -191,7 +299,6 @@ class _BottomChatAreaState extends State<BottomChatArea>
     return streamController.stream;
   }
 
-
   Widget audioBox() {
     return Container(
       margin: EdgeInsets.only(right: marginBack, left: 8.0, bottom: 4.0),
@@ -212,7 +319,7 @@ class _BottomChatAreaState extends State<BottomChatArea>
             opacity: _animation.value,
             duration: Duration(milliseconds: 100),
             child: Material(
-                color: Colors.blueGrey,
+                color: Colors.transparent,
                 child: InkWell(
                     child: Container(
                         padding: EdgeInsets.symmetric(horizontal: 4.0),
@@ -284,17 +391,106 @@ class _BottomChatAreaState extends State<BottomChatArea>
 
   @override
   Widget build(BuildContext context) {
+    Widget animatedMic() {
+      return Align(
+        alignment: Alignment.bottomLeft,
+        child: Padding(
+          padding: const EdgeInsets.only(left: 0.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              AnimatedBuilder(
+                animation: _animationController,
+                builder: (context, child) {
+                  return Transform(
+                    transform: Matrix4.identity()
+                      ..translate(0.0, 24)
+                      ..translate(_micTranslateRight.value)
+                      ..translate(_micTranslateLeft.value)
+                      ..translate(0.0, _micTranslateTop.value)
+                      ..translate(0.0, _micTranslateDown.value)
+                      ..translate(0.0, _micInsideTrashTranslateDown.value),
+                    child: Transform.rotate(
+                      angle: _micRotationFirst.value,
+                      child: Transform.rotate(
+                        angle: _micRotationSecond.value,
+                        child: child,
+                      ),
+                    ),
+                  );
+                },
+                child: IconButton(
+                  icon: Icon(
+                    Icons.mic,
+                    color: Color(0xFFef5552),
+                    size: 30,
+                  ),
+                  onPressed: () {},
+                ),
+              ),
+              AnimatedBuilder(
+                  animation: _trashWithCoverTranslateTop,
+                  builder: (context, child) {
+                    return Transform(
+                      transform: Matrix4.identity()
+                        ..translate(0.0, _trashWithCoverTranslateTop.value)
+                        ..translate(0.0, _trashWithCoverTranslateDown.value),
+                      child: child,
+                    );
+                  },
+                  child: Column(
+                    children: [
+                      AnimatedBuilder(
+                        animation: _trashCoverRotationFirst,
+                        builder: (context, child) {
+                          return Transform(
+                            transform: Matrix4.identity()
+                              ..translate(_trashCoverTranslateLeft.value)
+                              ..translate(_trashCoverTranslateRight.value),
+                            child: Transform.rotate(
+                              angle: _trashCoverRotationSecond.value,
+                              child: Transform.rotate(
+                                angle: _trashCoverRotationFirst.value,
+                                child: child,
+                              ),
+                            ),
+                          );
+                        },
+                        child: Image(
+                          image: AssetImage('assets/trash_cover.png'),
+                          width: 30,
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 1.5),
+                        child: Image(
+                          image: AssetImage('assets/trash_container.png'),
+                          width: 30,
+                        ),
+                      ),
+                    ],
+                  )),
+            ],
+          ),
+        ),
+      );
+    }
+
     return Consumer<ScreenHeight>(
       builder: (context, _res, child) => Stack(
         children: [
           Align(
             alignment: Alignment.bottomLeft,
-            child: isRecording ? audioBox() : Container(),
+            child: isRecording
+                ? audioBox()
+                : onPress
+                    ? animatedMic()
+                    : Container(),
           ),
           showLockUi
               ? Positioned(
-                  left: widget.width - 62,
-                  top: widget.height - 200,
+                  right: 0,
+                  bottom: 0,
                   child: Container(
                     height: vheight,
                     width: 54,
@@ -311,8 +507,8 @@ class _BottomChatAreaState extends State<BottomChatArea>
                 )
               : Container(),
           Positioned(
-            left: position.dx,
-            top: _res.isOpen ? position.dy - _res.keyboardHeight : position.dy,
+            right: 2.0,
+            bottom: 2.0,
             child: GestureDetector(
               behavior: HitTestBehavior.translucent,
               onTap: () {
@@ -410,14 +606,15 @@ class _BottomChatAreaState extends State<BottomChatArea>
                 if (mu.globalPosition.dx - 50 < 220) {
                   setState(() {
                     shouldSend = false;
+                    onPress = true;
                   });
                   if (_myRecorder.isRecording) stopRecorder();
+                  _animationController.forward();
                   _resetUi();
                   _resetTimer();
                 }
               },
               child: Container(
-                margin: const EdgeInsets.only(right: 16.0),
                 child: Material(
                   color: green_color,
                   borderRadius: BorderRadius.circular(100),

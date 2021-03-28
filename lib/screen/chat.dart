@@ -1,4 +1,3 @@
-import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_keyboard_size/flutter_keyboard_size.dart';
@@ -46,19 +45,14 @@ class _ChatScreenState extends State<ChatScreen>
     var width = MediaQuery.of(context).size.width;
     var height = MediaQuery.of(context).size.height;
     return Container(
-      padding: allMargin8,
       child: Stack(
         children: [
           Column(
             children: [
-              Container(
-                height: 90,
-                color: Color.fromRGBO(34, 153, 99, 1),
-              ),
               Expanded(
                 flex: 1,
                 child: Container(
-                  padding: const EdgeInsets.only(bottom: 58.0),
+                  margin: bottomMargin,
                   child: ListView.builder(
                       reverse: true,
                       itemCount: messages.length,
@@ -75,8 +69,7 @@ class _ChatScreenState extends State<ChatScreen>
                                 right: item.toSender ? twentyPercent : 10.0,
                                 bottom: removeTopMargin ? 0.0 : 5.0,
                                 top: 5.0),
-                            padding: EdgeInsets.only(
-                                left: 8.0, right: 8.0, top: 8.0, bottom: 2.0),
+                            padding: allMargin8,
                             width: 100.0,
                             decoration: BoxDecoration(
                                 color: item.toSender
@@ -134,10 +127,10 @@ class _ChatScreenState extends State<ChatScreen>
             ],
           ),
           Align(
-            alignment: Alignment.bottomLeft,
+            alignment: Alignment.bottomCenter,
             child: BottomChatArea(
               width: width,
-              height: height,
+              height: height * .8,
               onAudioSend: (String path) {
                 setState(() {
                   messages.add(
@@ -159,7 +152,6 @@ class _ChatScreenState extends State<ChatScreen>
   Widget appbar(BuildContext context) {
     return AppBar(
       centerTitle: false,
-      backgroundColor: green_color,
       title: Text(
         "Voice Chat",
         style: TextStyle(color: white_color),
